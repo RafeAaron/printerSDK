@@ -147,25 +147,21 @@ bool Printer::printHeading(unsigned char* data, int dataLength, bool bold, bool 
     }
     cout << (int)printMode << endl;
 
-    unsigned char printModeCommand[6];
+    unsigned char printModeCommand[4];
     printModeCommand[0] = this->lineFeed;
-    printModeCommand[1] = initializePrinter.beginning;
-    printModeCommand[2] = initializePrinter.middle;
-    printModeCommand[3] = selectPrintMode.beginning;
-    printModeCommand[4] = selectPrintMode.middle;
-    printModeCommand[5] = (unsigned char)printMode;
+    printModeCommand[1] = selectPrintMode.beginning;
+    printModeCommand[2] = selectPrintMode.middle;
+    printModeCommand[3] = (unsigned char)printMode;
 
-    if(sendDataToPrinter(printModeCommand, 6, this->connectedToSocket, this->bluetoothSocket))
+    if(!sendDataToPrinter(printModeCommand, 4, this->connectedToSocket, this->bluetoothSocket))
     {
-        cout << "Command Successfully sent" << endl;
-
-        return sendDataToPrinter(data, dataLength, this->connectedToSocket, this->bluetoothSocket);
-    }
-    else{
-
-        cout << "There was an error sending the command to the printer" << endl;
+        cout << "Print Mode not set. Error" << endl;
         return false;
     }
+    else{
+        return sendDataToPrinter(data, dataLength, this->connectedToSocket, this->bluetoothSocket);
+    } 
+
 }
 
 bool Printer::printGratingLogo(unsigned char* monochromeData, int width, int height)
